@@ -6,7 +6,7 @@
 #
 #   complete -C path/to/this/script -o default <command>
 #
-# to your ~/.bashrc, where <command> is one of the classes defined in this script.
+# to your ~/.bashrc, where <command> is one of the Complete::* classes defined in this script.
 
 require 'fileutils'
 
@@ -30,8 +30,8 @@ class Complete::Base
     self.line = line
   end
 
-  # Subclasses may return false from this method if they feel unsure about
-  # providing completions.
+  # Subclasses may return false from this method if they can't provide
+  # completions for some reason.
   def ready?
     true
   end
@@ -49,9 +49,14 @@ private
     post_process(candidate.empty? ? completions : completions.select { |c| c.start_with?(candidate) })
   end
 
+  # The list of all arguments passed to the command.
+  def arguments
+    @arguments ||= line.split(/\s+/, -1)[1..-1]
+  end
+
   # The word we're attempting to complete.
   def candidate
-    line.split[-1].strip
+    @candidate ||= arguments.last.strip
   end
 
   # Provides a hook for performing additional processing of the potential matches
@@ -62,10 +67,35 @@ private
 end
 
 
-# Provides completions for basic Git commands.
-class Git < Complete::Base
+# Provides completions for basic Git commands and completion of local branch
+# names for "checkout".
+class Complete::Git < Complete::Base
+
+  # Only allows completion of the first argument to git. So "git ch" completes
+  # to "git checkout", but "git rm me" does not (necessarily) complete to
+  # "git rm merge".
+  #
+  # Makes an exception for "checkout". In that case, it attempts to complete
+  # local branch names. See #completions.
+  def ready?
+    arguments.one? || checkout?
+  end
+
+  # If the last argument is "checkout", returns a list of local branches (except
+  # the one currently checked out, if that exists), so as to provide completion
+  # of branch names. Otherwise, returns a basic list of common commands.
   def completions
-    %w{add bisect branch checkout clone commit diff fetch grep init log merge mv pull push rebase reset rm show status tag}
+    if checkout?
+      `git branch --no-color | grep -v '*'`.split("\n").map(&:strip)
+    else
+      %w{add bisect branch checkout clone commit diff fetch grep init log merge mv pull push rebase reset rm show stash status tag}
+    end
+  end
+
+private
+
+  def checkout?
+    %w{checkout co}.include?(arguments.first)
   end
 end
 
@@ -75,7 +105,7 @@ end
 # so you don't need to wait on "rake -T" to run every time you attempt to
 # complete. If your tasks change, simply remove that file and it will be
 # regenerated the next time you attempt to complete.
-class Rake < Complete::Base
+class Complete::Rake < Complete::Base
 
   # Returns true if the current directory contains a Rakefile, false if not.
   def ready?
@@ -89,10 +119,10 @@ class Rake < Complete::Base
     if File.exists?(path)
       File.read(path)
     else
-      tasks = `rake --silent --tasks | awk '{ print $2 }'`
-      FileUtils.mkpath(File.dirname(path))
-      File.open(path, 'w') { |f| f.puts tasks }
-      tasks
+      `rake --silent --tasks | awk '{ print $2 }'`.tap do |tasks|
+        FileUtils.mkpath(File.dirname(path))
+        File.open(path, 'w') { |f| f.puts tasks }
+      end
     end.split("\n")
   end
 
