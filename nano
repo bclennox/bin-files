@@ -1,0 +1,21 @@
+#!/bin/bash
+
+path=$1
+
+if [ -f "$path" ]; then
+  if [ ! -w "$path" ]; then
+    echo -n "File '$path' isn't writable. Continue? [n] "
+    read reply
+    if [ "x${reply:0:1}" != "xy" ]; then
+      exit 1
+    fi
+  fi
+else
+  if [ ! -w `dirname $path` ]; then
+    echo "You do not have write permissions in this directory."
+    exit 1
+  fi
+fi
+
+/usr/bin/nano "$path"
+

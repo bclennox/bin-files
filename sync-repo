@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 /path/to/repo host [remote_path]"
+  exit 1
+fi
+
+. ~/.bash_aliases
+
+if [ "x$3" = "x" ]; then
+  remote_path="/opt/raritan/polaris/rails/vpn.main"
+else
+  remote_path=$3
+fi
+
+echzec "rsync -rlcvz --exclude-from=$HOME/.sync-repo-excludes $1 brandanl@$2:$remote_path"

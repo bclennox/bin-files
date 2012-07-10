@@ -1,0 +1,126 @@
+#!/usr/bin/perl
+#
+# deadimages
+# Copyright 2008 Brandan Lennox
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Examples:
+#
+#   # prints all dead images in this site
+#   [~/web/site1/htdocs]$ deadimages
+#
+#   # prints all live images in some other site
+#   [~/web/site1/htdocs]$ deadimages ~/web/site2/htdocs
+#
+#   # prints all live images in this site
+#   [~/web/site1/htdocs]$ deadimages -i
+#
+#   # writes to /tmp/dead.out all dead images in this site
+#   [~/web/site1/htdocs]$ deadimages -o /tmp/dead.out
+#
+
+use warnings;
+use strict;
+use Getopt::Long;
+use File::Basename;
+
+### user-configurable file extension lists (case-insensitive) ###
+
+my @source_extensions = qw/html htm php php5 cgi css js/;
+my @image_extensions = qw/jpg png gif/;
+
+### that's it for configuration ###
+
+$\ = $" = "\n";
+$|++;
+
+my %opts = ();
+GetOptions(\%opts, 'help', 'inverse', 'outfile=s', 'verbose');
+
+die usage() if defined $opts{help};
+
+# hack
+my $found = !! defined $opts{inverse};
+
+my $htdocs = shift || $ENV{PWD};
+my $images = "$htdocs/images";
+
+my ( @files, @images );
+add_files( $htdocs, \@files, @source_extensions );
+add_files( $images, \@images, @image_extensions );
+
+# we only really care about the filename for images
+@images = map { basename $_ } @images;
+
+print "Files to grep:\n@files" if $opts{verbose};
+
+my %refs = map { $_ => !$found } @images;
+for my $image ( @images ){
+  print STDERR "Examining $image..." if $opts{verbose};
+
+  local $" = ' ';
+  system qq{grep "$image" @files > /dev/null 2>&1};
+  die "Interrupted\n" if ( $? & 127 );
+  
+  $refs{$image} = $found if ( $? >> 8 == 0 );
+}
+
+my $OUT;
+if ( defined $opts{outfile} ){
+  open $OUT, '>', $opts{outfile} or die "Couldn't write to '$opts{outfile}': $!";
+} else {
+  $OUT = \*STDOUT;
+}
+
+map { print $OUT $_ if $refs{$_} } sort keys %refs;
+
+exit;
+
+sub usage {
+  my $basename = basename $0;
+  
+  return <<EOF
+Usage: $basename [-i] [-o outfile] [-hv] [dir]
+Prints the names of images in dir/images that aren't in use by any source file
+Uses current directory by default
+
+  -h|--help     this help screen
+  
+  -i|--inverse  print filenames that ARE in use, rather than those NOT in use
+  -o|--outfile  file to write with results (stdout if unspecified)
+  -v|--verbose  noisy on stderr
+
+EOF
+}
+
+sub add_files {
+  my ( $path, $files, @exts ) = @_;
+  my %exts = map { $_ => 1 } @exts;
+
+  opendir my $DIR, $path or die "Couldn't opendir '$path': $!\n";
+
+  for ( readdir $DIR ){
+    next if /^\./;
+    
+    my $fullpath = "$path/$_";
+    add_files( $fullpath, $files, @exts ) if -d $fullpath;
+    
+    my ( undef, undef, $suffix ) = fileparse( $fullpath, qr/[^.]+$/ );
+    next unless -f $fullpath && exists $exts{lc $suffix};
+    push @$files => $fullpath;
+  }
+  
+  sort @$files;
+}

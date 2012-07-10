@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+require 'net/http'
+require 'uri'
+
+puts Net::HTTP.get(URI.parse('http://www.whatismyip.com/automation/n09230945.asp'))

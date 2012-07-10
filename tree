@@ -1,0 +1,82 @@
+#!/usr/bin/perl -w
+
+# $Id: tree-msoulier.pl.php,v 1.1.1.1 2004/02/15 10:13:14 rdw Exp $
+
+use strict;
+use Getopt::Std;
+
+sub listdir($$);
+
+my %opt = ();
+getopts('ds', \%opt)
+    or die "Usage: $0 [options] [directory]\n";
+
+my $dir = "";
+if (@ARGV > 1) {
+    die "Usage: $0 [options] [directory]\n";
+}
+elsif (@ARGV == 1) {
+    $dir = shift;
+}
+else {
+    $dir = '.';
+}
+    
+print "$dir\n";
+listdir($dir, 1);
+
+sub listdir($$) {
+    my ($dir, $level) = @_;
+    local *DIR;
+
+    # Note, we return here to avoid stopping the entire process due to an
+    # unreadable directory.
+    opendir (DIR, $dir)
+        or return;
+    
+    my @files = sort map { $dir . "/$_" } grep { !/^\./ } readdir DIR;
+    if ($opt{'d'}) {
+        @files = grep { -d $_ } @files;
+    }
+    my $count = 0;
+
+    foreach my $file (@files) {
+        $count++;
+        my $filename = (split /\//, $file)[-1];
+        # for each level - 1, print a |  
+        print "|    " x ($level - 1);
+        # then print one with a -- on it
+        if ($count == @files) {
+            print "`-- ";
+        }
+        else {
+            print "|-- ";
+        }
+        # If the size option was requested, retrieve it.
+        if ($opt{'s'}) {
+            my $size = (stat $file)[7];
+            printf "[ %9s ] ", $size;
+        }
+        print "$filename";
+        # if it's a symlink, resolve it
+        if (-l $file) {
+            print " -> ";
+            my $linkto = readlink $file;
+            $linkto =~ s/^\.\///;
+            my $fullpath = $linkto =~ /^\// ? $linkto : "$dir/" . $linkto;
+            if (! -e $fullpath) {
+                print "($linkto)";
+            }
+            else {
+                print "$linkto";
+            }
+        }
+        print "\n";
+        # now, if this is a directory, traverse it.
+        if (-d $file and not -l $file) {
+            listdir($file, $level + 1);
+        }
+
+    }
+    closedir DIR;
+}

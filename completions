@@ -1,0 +1,117 @@
+#!/usr/bin/env ruby
+
+# Adapted from http://onrails.org/articles/2006/08/30/namespaces-and-rake-command-completion
+#
+# Save this somewhere, chmod 755 it, then add
+#
+#   complete -C path/to/this/script -o default <command>
+#
+# to your ~/.bashrc, where <command> is one of the classes defined in this script.
+
+require 'fileutils'
+
+module Complete
+
+  # Pass in bash's ENV['COMP_LINE'], and this will attempt to instantiate
+  # the appropriate class and output the possible completions to standard
+  # output. If the command is unsupported, it does nothing.
+  def self.execute(line)
+    puts const_get(line.split.first.capitalize).new(line)
+  rescue NameError => e
+  end
+end
+
+
+# Base class for command completers.
+class Complete::Base
+  attr_accessor :line
+
+  def initialize(line)
+    self.line = line
+  end
+
+  # Subclasses may return false from this method if they feel unsure about
+  # providing completions.
+  def ready?
+    true
+  end
+
+  # If ready?, joins all the matches with a newline, which is what bash
+  # expects. Otherwise, returns the empty string.
+  def to_s
+    ready? ? matches.join("\n") : ''
+  end
+
+private
+
+  # Post-processes all the potential matches based on the candidate.
+  def matches
+    post_process(candidate.empty? ? completions : completions.select { |c| c.start_with?(candidate) })
+  end
+
+  # The word we're attempting to complete.
+  def candidate
+    line.split[-1].strip
+  end
+
+  # Provides a hook for performing additional processing of the potential matches
+  # after the initial search.
+  def post_process(possible_completions)
+    possible_completions
+  end
+end
+
+
+# Provides completions for basic Git commands.
+class Git < Complete::Base
+  def completions
+    %w{add bisect branch checkout clone commit diff fetch grep init log merge mv pull push rebase reset rm show status tag}
+  end
+end
+
+
+# Provides completions for Rake tasks based on the Rakefile in the current
+# directory. The list of tasks is cached in ~/.rake_completions/<expanded/path>/completions
+# so you don't need to wait on "rake -T" to run every time you attempt to
+# complete. If your tasks change, simply remove that file and it will be
+# regenerated the next time you attempt to complete.
+class Rake < Complete::Base
+
+  # Returns true if the current directory contains a Rakefile, false if not.
+  def ready?
+    File.file?(File.join(Dir.pwd, 'Rakefile'))
+  end
+
+  # Returns the list of tasks, caching it if necessary.
+  def completions
+    path = File.join(ENV['HOME'], '.rake_completions', Dir.pwd[1..-1], 'completions')
+
+    if File.exists?(path)
+      File.read(path)
+    else
+      tasks = `rake --silent --tasks | awk '{ print $2 }'`
+      FileUtils.mkpath(File.dirname(path))
+      File.open(path, 'w') { |f| f.puts tasks }
+      tasks
+    end.split("\n")
+  end
+
+private
+
+  # Handles task namespacing (db:migrate:status). Bash expects the completions
+  # to exclude colons already included in the candidate word, so this returns
+  # the portions of the string after that.
+  def post_process(possible_completions)
+    if candidate.include?(':')
+      possible_completions.map { |c| c.split(':', candidate.count(':') + 1).last }
+    else
+      possible_completions
+    end
+  end
+end
+
+
+### Main ###
+
+
+Complete.execute(ENV['COMP_LINE'])

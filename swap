@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ $# != 2 ]; then
+  echo "Usage: $0 file_a file_b"
+  exit 1
+fi
+
+tmpfile=`mktemp swap.XXXXXX`
+mv "$1" "$tmpfile"
+mv "$2" "$1"
+mv "$tmpfile" "$2"
+rm -f "$tmpfile"

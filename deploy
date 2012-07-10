@@ -1,0 +1,9 @@
+#!/bin/bash
+
+git-check-push
+
+if [ $? != 0 ]; then
+  exit 1
+fi
+
+cap deploy
