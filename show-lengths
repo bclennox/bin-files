@@ -1,0 +1,13 @@
+#!/bin/bash
+
+show=$1
+episode_count=$2
+
+# Main
+
+i=1
+while [ $i -le $episode_count ]; do
+  echo -n "$i,"
+  curl -s http://5by5.tv/$show/$i | perl -lne 'print(int($1)*60 + int($2)) if /(?:(\d+)\s+hours?)?(?:\s+(\d+)\s+minutes?)\s+&bull;/'
+  i=$(($i + 1))
+done
