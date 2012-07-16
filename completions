@@ -68,24 +68,25 @@ end
 
 
 # Provides completions for basic Git commands and completion of local branch
-# names for "checkout".
+# names for branch operations (checkout, merge, etc.).
 class Complete::Git < Complete::Base
 
   # Only allows completion of the first argument to git. So "git ch" completes
   # to "git checkout", but "git rm me" does not (necessarily) complete to
   # "git rm merge".
   #
-  # Makes an exception for "checkout". In that case, it attempts to complete
-  # local branch names. See #completions.
+  # Makes an exception for branch commands, like checkout and merge. In that
+  # case, it attempts to complete local branch names. See #completions.
   def ready?
-    arguments.one? || checkout?
+    arguments.one? || branch_command?
   end
 
-  # If the last argument is "checkout", returns a list of local branches (except
-  # the one currently checked out, if that exists), so as to provide completion
-  # of branch names. Otherwise, returns a basic list of common commands.
+  # If the last argument is a command that expects a branch name, returns a list
+  # of local branches (except the one currently checked out, if that exists), so
+  # as to provide completion of branch names. Otherwise, returns a basic list of
+  # common commands.
   def completions
-    if checkout?
+    if branch_command?
       `git branch --no-color | grep -v '*'`.split("\n").map(&:strip)
     else
       %w{add bisect branch checkout clone commit diff fetch grep init log merge mv pull push rebase reset rm show stash status tag}
@@ -94,8 +95,8 @@ class Complete::Git < Complete::Base
 
 private
 
-  def checkout?
-    %w{checkout co}.include?(arguments.first)
+  def branch_command?
+    %w{checkout co merge}.include?(arguments.first)
   end
 end
 
