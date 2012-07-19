@@ -82,12 +82,11 @@ class Complete::Git < Complete::Base
   end
 
   # If the last argument is a command that expects a branch name, returns a list
-  # of local branches (except the one currently checked out, if that exists), so
-  # as to provide completion of branch names. Otherwise, returns a basic list of
-  # common commands.
+  # of local branches so as to provide completion of branch names. Otherwise,
+  # returns a basic list of common commands.
   def completions
     if branch_command?
-      `git branch --no-color | grep -v '*'`.split("\n").map(&:strip)
+      `git branch --no-color | perl -lpe 's/^\\*?\\s+//'`.split("\n").map(&:strip)
     else
       %w{add bisect branch checkout clone commit diff fetch grep init log merge mv pull push rebase reset rm show stash status tag}
     end
@@ -96,7 +95,7 @@ class Complete::Git < Complete::Base
 private
 
   def branch_command?
-    %w{checkout co merge}.include?(arguments.first)
+    %w{checkout co merge pull push}.include?(arguments.first)
   end
 end
 
