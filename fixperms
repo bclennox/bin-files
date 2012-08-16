@@ -14,7 +14,7 @@ user=brandanl
 group=100
 
 for path in "$@"; do
-  for file in $(find $path \( -type f -o -type d \) -user brandan | grep -v '.svn' | grep -v '.git'); do
+  for file in $(find $path \( -type f -o -type d \) -user brandan | grep -v '.svn' | grep -v '/.git'); do
     chown $user:$group "$file"
     chmod g+w "$file"
   done
