@@ -95,7 +95,7 @@ class Complete::Git < Complete::Base
 private
 
   def branch_command?
-    %w{br branch checkout co merge pull push}.include?(arguments.first)
+    %w{br branch checkout co merge pull push rebase}.include?(arguments.first)
   end
 end
 
