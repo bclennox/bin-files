@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sudo launchctl $1 /Library/LaunchDaemons/com.crashplan.engine.plist 
