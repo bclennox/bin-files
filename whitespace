@@ -1,0 +1,3 @@
+#!/bin/bash
+
+perl -i -lpe 's/\s+$//; s/\t/  /g; s/\r\n/\n/' $@
