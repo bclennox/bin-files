@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/usr/bin/ruby
 
 # Adapted from http://onrails.org/articles/2006/08/30/namespaces-and-rake-command-completion
 #
@@ -95,7 +95,7 @@ class Complete::Git < Complete::Base
 private
 
   def branch_command?
-    %w{br branch checkout co merge pull push rebase}.include?(arguments.first)
+    %w{br branch checkout co merge pull push rebase show}.include?(arguments.first)
   end
 end
 
