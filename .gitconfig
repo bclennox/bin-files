@@ -1,0 +1,16 @@
+[user]
+	email = brandan@bclennox.com
+	name = Brandan Lennox
+[alias]
+	br = branch
+	ci = commit
+	co = checkout
+	pr = pull --rebase
+	st = status
+[color]
+	ui = always
+[core]
+	quotepath = false
+	excludesfile = /Users/brandan/.gitignore
+[log]
+	decorate

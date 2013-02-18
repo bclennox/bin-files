@@ -1,0 +1,19 @@
+escape ^Oo
+startup_message off
+
+defscrollback 100000
+
+hardstatus alwayslastline
+hardstatus string '%{Ck}[ %H ]%{Y}[ %` ]%{g}[%= %{wk}%?%-Lw%?%{=b kR}(%{W}%n*%f %t%?(%u)%?%{=b kR})%{= kw}%?%+Lw%?%?%= %{g}]%{Y}[ %l ]%{=b C}[ %m/%d %c ]%{W}'
+
+shelltitle '$ |bash'
+termcapinfo xterm* ti@:te@
+
+bind ^L clear
+
+screen -t server
+screen -t console
+screen -t git
+screen
+
+backtick 0 30 30 sh -c 'screen -ls | grep --color=no -o "$PPID[^[:space:]]*"'
