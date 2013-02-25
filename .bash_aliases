@@ -12,8 +12,8 @@ alias mv='mv -i'
 alias b='bbedit .'
 alias re="source $HOME/.bash_profile"
 
-alias logd='tail -f log/development.log'
-alias logt='tail -f log/test.log'
+alias logd='tail -F log/development.log'
+alias logt='tail -F log/test.log'
 
 alias gb='git branch'
 alias gc='git commit'
