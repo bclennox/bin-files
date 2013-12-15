@@ -1,26 +1,3 @@
-ack(){
-  pattern="$1"
-  shift
-
-  if [ $# = 0 ]; then
-    dirs=.
-  else
-    dirs=$*
-  fi
-
-  if [ "x$ACK_GREP" = "x" ]; then
-    grep=grep
-  else
-    grep=$ACK_GREP
-  fi
-
-  for dir in $dirs; do
-    # find/bash can't handle all these special characters when they're in
-    # variables, so don't bother trying to optimize these excluded paths
-    find ${dir%/} \( -path '*/db' -o -path '*/.git' -o -path '*/.svn' -o -path '*/public/ext' -o -path '*/public/ext4' -o -path '*/public/assets' -o -path '*/vendor' -o -path '*/app/assets/javascripts/lib' -o -path '*/tmp' -o -path '*/log' \) -prune -o -type f -print0 | xargs -0 $grep -n "$pattern"
-  done
-}
-
 app(){
   supercd "$HOME/apps" "$1" master
 }

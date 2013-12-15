@@ -1,0 +1,16 @@
+# Global options
+--color-filename=bold
+--color-lineno=clear
+--color-match=magenta
+
+# Rails directories
+--ignore-dir=coverage
+--ignore-dir=db
+--ignore-dir=public/assets
+--ignore-dir=vendor
+--ignore-dir=tmp
+--ignore-dir=log
+
+# Other files
+--ignore-file=ext:svg
+--ignore-file=match:/^.(git)?keep$/
