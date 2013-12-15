@@ -8,7 +8,7 @@
 	pr = pull --rebase
 	st = status
 [color]
-	ui = always
+	ui = true
 [core]
 	quotepath = false
 	excludesfile = /Users/brandan/.gitignore
