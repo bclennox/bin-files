@@ -1,0 +1,22 @@
+set -x
+
+start(){
+  launchctl load /Users/brandan/Library/LaunchAgents/cx.pow.powd.plist
+}
+
+stop(){
+  launchctl unload /Users/brandan/Library/LaunchAgents/cx.pow.powd.plist
+}
+
+case "$1" in
+  stop)
+    stop
+    ;;
+  start)
+    start
+    ;;
+  restart)
+    stop
+    start
+    ;;
+esac

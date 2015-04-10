@@ -2,7 +2,7 @@
 
 # Adapted from http://onrails.org/articles/2006/08/30/namespaces-and-rake-command-completion
 #
-# Save this somewhere, chmod 755 it, then add
+# Save this somewhere, chmod 0755 it, then add
 #
 #   complete -C path/to/this/script -o default <command>
 #
@@ -114,8 +114,6 @@ class Complete::Rake < Complete::Base
 
   # Returns the list of tasks, caching it if necessary.
   def completions
-    path = File.join(ENV['HOME'], '.rake_completions', Dir.pwd[1..-1], 'completions')
-
     if File.exists?(path)
       File.read(path)
     else
@@ -127,6 +125,10 @@ class Complete::Rake < Complete::Base
   end
 
 private
+
+  def path
+    @path ||= File.join(ENV['HOME'], '.rake_completions', Dir.pwd[1..-1], 'completions')
+  end
 
   # Handles task namespacing (db:migrate:status). Bash expects the completions
   # to exclude colons already included in the candidate word, so this returns
