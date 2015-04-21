@@ -67,39 +67,6 @@ private
 end
 
 
-# Provides completions for basic Git commands and completion of local branch
-# names for branch operations (checkout, merge, etc.).
-class Complete::Git < Complete::Base
-
-  # Only allows completion of the first argument to git. So "git ch" completes
-  # to "git checkout", but "git rm me" does not (necessarily) complete to
-  # "git rm merge".
-  #
-  # Makes an exception for branch commands, like checkout and merge. In that
-  # case, it attempts to complete local branch names. See #completions.
-  def ready?
-    arguments.one? || branch_command?
-  end
-
-  # If the last argument is a command that expects a branch name, returns a list
-  # of local branches so as to provide completion of branch names. Otherwise,
-  # returns a basic list of common commands.
-  def completions
-    if branch_command?
-      `git branch --no-color | perl -lpe 's/^\\*?\\s+//'`.split("\n").map(&:strip)
-    else
-      %w{add bisect branch checkout clone commit diff fetch grep init log merge mv pull push rebase reset rm show stash status tag}
-    end
-  end
-
-private
-
-  def branch_command?
-    %w{br branch checkout co merge pull push rebase show}.include?(arguments.first)
-  end
-end
-
-
 # Provides completions for Rake tasks based on the Rakefile in the current
 # directory. The list of tasks is cached in ~/.rake_completions/<expanded/path>/completions
 # so you don't need to wait on "rake -T" to run every time you attempt to
