@@ -84,7 +84,7 @@ class Complete::Rake < Complete::Base
     if File.exists?(path)
       File.read(path)
     else
-      `bundle exec rake --silent --tasks | awk '{ print $2 }'`.tap do |tasks|
+      `bundle exec rake --all --silent --tasks | awk '{ print $2 }'`.tap do |tasks|
         FileUtils.mkpath(File.dirname(path))
         File.open(path, 'w') { |f| f.puts tasks }
       end
