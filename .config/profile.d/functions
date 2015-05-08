@@ -23,14 +23,14 @@ m(){
 }
 
 me(){
-  username=$(ruby -rjson -e "puts JSON.parse(File.read(File.join(ENV['HOME'], '.quick_ssh'))).fetch('username')")
+  username=$(ruby -rjson -e "usernames = JSON.parse(File.read(File.join(ENV['HOME'], '.quick_ssh'))) ; usernames.default = usernames['default'] ; puts usernames[ARGV.first]" $1)
   quick_ssh $username $1
 }
 
 # Usage: quick_ssh user hostish
 #
 # SSHes you into a machine on the local network. The hostish argument
-# will be passed to the fuzzy_ip script, so see the docs on that:
+# will be passed to the fuzzy_host script, so see the docs on that:
 #
 #   quick_ssh brandanl 49       # ssh brandanl@192.168.42.49
 #   quick_ssh root 43.151       # ssh root@192.168.43.151
@@ -42,9 +42,9 @@ me(){
 #   root 43.151
 quick_ssh(){
   user=$1
-  host=$(fuzzy_ip $2)
+  host=$(fuzzy_host $2)
 
-  ssh $user@$host
+  echzec ssh $user@$host
 }
 
 # Usage: repo [id]
@@ -118,7 +118,7 @@ rmsshkey(){
       # If available use the Open SSH keygen tool since
       # hostnames may be hashed.
       if [ -n $(which ssh-keygen) ] ; then
-        hostre=$(fuzzy_ip $re)
+        hostre=$(fuzzy_host $re)
         ssh-keygen -q -f ~/.ssh/known_hosts -R $hostre 2>/dev/null 1>/dev/null
       elif [ -n "$re" -a -f ~/.ssh/known_hosts ] ; then
         perl -ni -e "print unless /$re/" ~/.ssh/known_hosts
