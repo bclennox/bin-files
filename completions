@@ -72,29 +72,56 @@ end
 # so you don't need to wait on "rake -T" to run every time you attempt to
 # complete. If your tasks change, simply remove that file and it will be
 # regenerated the next time you attempt to complete.
-class Complete::Rake < Complete::Base
+class Complete::RubyTask < Complete::Base
 
   # Returns true if the current directory contains a Rakefile, false if not.
   def ready?
-    File.file?(File.join(Dir.pwd, 'Rakefile'))
+    File.file?(File.join(Dir.pwd, config_file))
   end
 
   # Returns the list of tasks, caching it if necessary.
   def completions
-    if File.exists?(path)
-      File.read(path)
-    else
-      `bundle exec rake --all --silent --tasks | awk '{ print $2 }'`.tap do |tasks|
-        FileUtils.mkpath(File.dirname(path))
-        File.open(path, 'w') { |f| f.puts tasks }
-      end
-    end.split("\n")
+    cache_tasks unless cached?
+    cached_tasks
   end
 
 private
 
+  def cached?
+    File.exists?(path)
+  end
+
+  def cached_tasks
+    File.read(path).lines
+  end
+
+  def cache_tasks
+    FileUtils.mkpath(File.dirname(path))
+    File.open(path, 'w') do |f|
+      f.puts normalized_tasks.join("\n")
+    end
+  end
+
+  def normalized_tasks
+    tasks.lines.map do |task|
+      task.split(/\s+/)[1]
+    end
+  end
+
+  def class_name
+    self.class.name.split('::').last
+  end
+
+  def config_file
+    "#{class_name}file"
+  end
+
   def path
-    @path ||= File.join(ENV['HOME'], '.rake_completions', Dir.pwd[1..-1], 'completions')
+    @path ||= File.join(ENV['HOME'], '.completions', Dir.pwd[1..-1], class_name.downcase)
+  end
+
+  def tasks
+    raise NotImplementedError
   end
 
   # Handles task namespacing (db:migrate:status). Bash expects the completions
@@ -109,7 +136,17 @@ private
   end
 end
 
-class Complete::Bundle < Complete::Rake; end
+class Complete::Rake < Complete::RubyTask
+  def tasks
+    `rake --tasks --all --silent`
+  end
+end
+
+class Complete::Cap < Complete::RubyTask
+  def tasks
+    `cap --tasks --all`
+  end
+end
 
 
 ### Main ###
