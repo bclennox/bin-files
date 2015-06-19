@@ -5,7 +5,6 @@
 
 # Rails directories
 --ignore-dir=coverage
---ignore-dir=db
 --ignore-dir=public/assets
 --ignore-dir=vendor
 --ignore-dir=tmp
