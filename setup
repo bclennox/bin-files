@@ -1,0 +1,26 @@
+repo=$HOME/repos/bin-files
+
+cd
+
+for file in .ackrc .gemrc .irbrc .vimrc; do
+  echo "Symlinking $file to $PWD"
+  ln -s $repo/$file
+done
+
+for file in .bash_profile .gitconfig .screenrc ; do
+  echo "Copying $file for editing"
+  cp $repo/$file .
+done
+
+echo "Symlinking .bashrc to .bash_profile"
+ln -s .bash_profile .bashrc
+
+mkdir -p .config/profile.d
+cd $_
+
+for file in aliases functions ; do
+  echo "Symlinking $file to $PWD"
+  ln -s $repo/$file
+done
+
+echo "Done."
