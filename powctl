@@ -1,10 +1,10 @@
-set -x
-
 start(){
+  set -x
   launchctl load /Users/brandan/Library/LaunchAgents/cx.pow.powd.plist
 }
 
 stop(){
+  set -x
   launchctl unload /Users/brandan/Library/LaunchAgents/cx.pow.powd.plist
 }
 
@@ -18,5 +18,9 @@ case "$1" in
   restart)
     stop
     start
+    ;;
+  *)
+    echo "Usage: $0 start|stop|restart"
+    exit 1
     ;;
 esac
