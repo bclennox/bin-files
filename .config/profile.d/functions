@@ -23,28 +23,7 @@ m(){
 }
 
 me(){
-  username=$(ruby -rjson -e "usernames = JSON.parse(File.read(File.join(ENV['HOME'], '.quick_ssh'))) ; usernames.default = usernames['default'] ; puts usernames[ARGV.first]" $1)
-  quick_ssh $username $1
-}
-
-# Usage: quick_ssh user hostish
-#
-# SSHes you into a machine on the local network. The hostish argument
-# will be passed to the fuzzy_host script, so see the docs on that:
-#
-#   quick_ssh brandanl 49       # ssh brandanl@192.168.42.49
-#   quick_ssh root 43.151       # ssh root@192.168.43.151
-#   quick_ssh user smoke-test   # ssh user@smoke-test
-#
-# You'll probably never call this directly. Use me() and root() instead:
-#
-#   me 49
-#   root 43.151
-quick_ssh(){
-  user=$1
-  host=$(fuzzy_host $2)
-
-  echzec ssh $user@$host
+  quick_ssh me $1
 }
 
 # Usage: repo [id]
@@ -114,9 +93,7 @@ rmsshkey(){
     rmsshkey $last
   else
     while [ $# -ne 0 ] ; do
-      local re=${1#*@} # strips everything up to and including an @ symbol
-      # If available use the Open SSH keygen tool since
-      # hostnames may be hashed.
+      local re=${1#*@}
       if [ -n $(which ssh-keygen) ] ; then
         hostre=$(fuzzy_host $re)
         ssh-keygen -q -f ~/.ssh/known_hosts -R $hostre 2>/dev/null 1>/dev/null
