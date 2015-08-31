@@ -4,7 +4,7 @@ echzec(){
 }
 
 gems(){
-  pcd $(bundle show $1)
+  cd $(bundle show $1) && pwd
 }
 
 # Usage: m
