@@ -22,10 +22,6 @@ m(){
   cd "$dir" && pwd
 }
 
-me(){
-  quick_ssh me $1
-}
-
 # Usage: repo [id]
 #
 # Clone all your Git repos into ~/repos. Create a file named ~/repos/.repos
@@ -103,10 +99,6 @@ rmsshkey(){
       shift
     done
   fi
-}
-
-root(){
-  quick_ssh root $1
 }
 
 routes(){
