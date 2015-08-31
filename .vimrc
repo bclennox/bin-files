@@ -3,6 +3,7 @@ if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
 endif
 
 set expandtab
+set shiftwidth=2
 set number
 set nocompatible        " Use Vim defaults (much better!)
 set bs=indent,eol,start         " allow backspacing over everything in insert mode
