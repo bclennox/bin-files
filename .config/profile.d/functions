@@ -4,7 +4,13 @@ echzec(){
 }
 
 gems(){
-  cd $(bundle show $1) && pwd
+  if [ -n "$1" ]; then
+    cd $(bundle show $1)
+  else
+    cd $(rvm gemdir)/gems
+  fi
+
+  pwd
 }
 
 # Usage: m
