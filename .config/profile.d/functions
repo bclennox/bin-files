@@ -7,7 +7,7 @@ gems(){
   if [ -n "$1" ]; then
     cd $(bundle show $1)
   else
-    cd $(rvm gemdir)/gems
+    cd "$GEM_HOME/gems"
   fi
 
   pwd
