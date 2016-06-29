@@ -19,13 +19,13 @@ gems(){
 m(){
   dir=$PWD
   until [ -d "$dir/.git" ]; do
-    dir=$(cd "$dir/.." && pwd)
+    dir=$(builtin cd "$dir/.." && pwd)
     if [[ $dir = '/' ]]; then
       echo "Couldn't find a .git directory. Are you in a git repo?"
       return 1
     fi
   done
-  cd "$dir" && pwd
+  builtin cd "$dir" && pwd
 }
 
 # Usage: repo [id]
