@@ -8,7 +8,7 @@ for file in .ackrc .gemrc .irbrc .vimrc; do
   ln -s $repo/$file
 done
 
-for file in .bash_profile .gitconfig .screenrc ; do
+for file in .bash_profile .gitconfig .psqlrc .screenrc ; do
   echo "Copying $file for editing"
   cp $repo/$file .
 done
