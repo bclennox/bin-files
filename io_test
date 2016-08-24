@@ -1,0 +1,33 @@
+#!/bin/bash
+
+block_size=64k
+block_count=16k
+iterations=10
+
+usage(){
+  echo "Usage: $0 -o output_path [-b block_size] [-c block_count] [-i iterations]"
+  exit 1
+}
+
+while getopts 'b:c:i:o:' arg ; do
+  case $arg in
+    b) block_size=$OPTARG  ;;
+    c) block_count=$OPTARG ;;
+    i) iterations=$OPTARG  ;;
+    o) output_path=$OPTARG ;;
+    *) usage               ;;
+  esac
+done
+
+if [ -z "$output_path" ]; then
+  usage
+fi
+
+dd="dd if=/dev/zero of=$output_path bs=$block_size count=$block_count conv=fdatasync" 
+echo "$iterations times: $dd"
+
+for i in $(seq 1 $iterations) ; do
+  $dd 2>&1 | grep copied | awk '{ print $8 $9 }'
+done
+
+rm -f $output_path
