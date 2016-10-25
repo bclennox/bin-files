@@ -1,0 +1,13 @@
+alias be='bundle exec'
+alias bi='bundle install'
+alias bu='bundle update --source'
+
+gems(){
+  if [ -n "$1" ]; then
+    cd $(bundle show $1)
+  else
+    cd "$GEM_HOME/gems"
+  fi
+
+  pwd
+}

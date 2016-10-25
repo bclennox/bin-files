@@ -19,7 +19,7 @@ ln -s .bash_profile .bashrc
 mkdir -p $profile_d
 cd $profile_d
 
-for file in aliases functions ; do
+for file in bash git rails ruby ; do
   echo "Symlinking $file to $PWD"
   ln -s $repo/$profile_d/$file
 done

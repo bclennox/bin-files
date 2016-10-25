@@ -1,0 +1,9 @@
+alias d='test -d test && cd test/dummy || cd spec/dummy'
+alias logd='tail -F log/development.log'
+alias logp='tail -F log/production.log'
+alias logs='tail -F log/*.log'
+alias logt='tail -F log/test.log'
+
+routes(){
+  rake routes | grep "$1"
+}
