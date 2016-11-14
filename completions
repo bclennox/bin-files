@@ -136,15 +136,25 @@ private
   end
 end
 
+class Complete::Rails < Complete::RubyTask
+  def ready?
+    system('which', '-s', 'rails')
+  end
+
+  def tasks
+    `bundle exec rails --tasks --all --silent`
+  end
+end
+
 class Complete::Rake < Complete::RubyTask
   def tasks
-    `rake --tasks --all --silent`
+    `bundle exec rake --tasks --all --silent`
   end
 end
 
 class Complete::Cap < Complete::RubyTask
   def tasks
-    `cap --tasks --all`
+    `bundle exec cap --tasks --all`
   end
 end
 
