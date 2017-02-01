@@ -1,10 +1,12 @@
 #!/bin/bash
 
 if [ $# -lt 1 ]; then
-  echo "Usage: $0 command"
+  echo "Usage: $0 command [command ...]"
   exit 1
 fi
 
-path="$HOME/.completions/$PWD/$1"
-echo "Removing $path"
-rm -f $path
+for command in $@ ; do
+  path="$HOME/.completions/$PWD/$command"
+  echo "Removing $path"
+  rm -f $path
+done
