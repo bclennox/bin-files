@@ -3,7 +3,7 @@
 BASH_PROFILE_SOURCED=yes
 
 PROMPT_COMMAND='echo -ne "\033k\033\\"'
-PS1="\[\e]2;\W: \$(~/.rvm/bin/rvm-prompt)\a\[\e[34m\][\W]\\$ \[\e[0m\]"
+PS1="\[\e]2;\W\a\[\e[34m\][\W]\\$ \[\e[0m\]"
 PS2="? "
 
 set -C
