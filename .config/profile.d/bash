@@ -1,3 +1,4 @@
+alias c='cd $_'
 alias cp='cp -i'
 alias findip='ifconfig | grep -A 6 "en" | grep "inet "'
 alias ls='/bin/ls -FG'
@@ -11,3 +12,4 @@ alias p='cd -'
 alias psgrep="ps aux | grep -v grep | grep"
 alias rm='rm -i'
 alias s='cd .. && pwd'
+alias v='vim $_'
