@@ -4,7 +4,7 @@ startup_message off
 defscrollback 100000
 
 hardstatus alwayslastline
-hardstatus string '%{= kw}[ %{= kw}%-Lw%{=b kR}(%{= kW}%n*%f %t%{=b kR})%{= kw}%+Lw ] %-= %{= kG}[ %H ]%{= kW}[ %l ]%{= kY}[ %D %M %d %Y %c ]%{-}'
+hardstatus string '%{= kw}[ %{= kw}%-Lw%{=b kR}(%{= kW}%n*%f %t%{=b kR})%{= kw}%+Lw ] %-= %{= kW}[ %H ]%{= kW}[ %l ]%{= kW}[ %D %M %d %Y %c ]%{-}'
 
 termcapinfo xterm* ti@:te@
 
