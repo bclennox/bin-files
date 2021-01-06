@@ -1,12 +1,8 @@
-alias be='bundle exec'
-alias bi='bundle install'
-alias bu='bundle update --source'
-
-gems(){
+gemcd(){
   if [ -n "$1" ]; then
-    cd $(bundle show $1)
+    cd $(bundle info $1 | perl -lne 'print $1 if /Path:\s*(.*)/')
   else
-    cd "$GEM_HOME/gems"
+    cd $(dirname $(bundle list --paths | tail -n 1))
   fi
 
   pwd
