@@ -1,0 +1,2 @@
+alias yi='yarn install --check-files'
+alias yin='yarn init'
