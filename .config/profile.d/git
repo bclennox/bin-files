@@ -1,30 +1,30 @@
-alias ga='git add'
-alias gb='git branch'
-alias gc='git commit'
-alias gcb='git checkout -b'
-alias gcm='git checkout master'
-alias gd='git diff'
 alias gdc='git diff --cached'
 alias gdh='git diff HEAD'
-alias gdm='git diff master'
+alias gdm='git diff $(git_main_branch)'
 alias gl='git log'
+alias gmm='git merge $(git_main_branch)'
 alias gp='git push -u origin $(git branch | grep "^*" | awk "{ print \$2 }")'
+alias grim='git rebase -i $(git_main_branch)'
 alias gs='git status'
-alias gu='git fetch -p ; git rebase ; git branch --merged | grep -v master | grep -v "^\\*" | xargs git branch -d'
+alias gu='git fetch -p ; git rebase ; git branch --merged | grep -v $(git_main_branch) | grep -v "^\\*" | xargs git branch -d'
 
 # Usage: m
 #
 # Climbs the directory tree until it reaches the root of a Git repository.
 m(){
-  dir=$PWD
-  until [ -d "$dir/.git" ]; do
-    dir=$(builtin cd "$dir/.." && pwd)
-    if [[ $dir = '/' ]]; then
+  dir=$(pwd)
+  orig="$dir"
+
+  until [ -d .git ]; do
+    cd ..
+    if [ "$(pwd)" = '/' ]; then
       echo "Couldn't find a .git directory. Are you in a git repo?"
+      cd "$orig"
       return 1
     fi
   done
-  builtin cd "$dir" && pwd
+
+  pwd
 }
 
 # Usage: repo [id]
@@ -59,11 +59,5 @@ repo(){
     return 1
   fi
 
-  if [ $id = 0 ]; then
-    cd $root
-  else
-    cd "$root/${projects[$((id - 1))]}"
-  fi
-
-  pwd
+  cd "$root/${projects[$id]}" && pwd
 }
